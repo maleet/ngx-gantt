@@ -1,4 +1,5 @@
 export enum GanttViewType {
+    hour = 'hour',
     day = 'day',
     quarter = 'quarter',
     month = 'month',
@@ -7,6 +8,10 @@ export enum GanttViewType {
 }
 
 export const ganttViews = [
+    {
+        name: '日',
+        value: GanttViewType.hour
+    },
     {
         name: '日',
         value: GanttViewType.day
