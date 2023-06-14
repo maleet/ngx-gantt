@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-- **package:** new fork name ([5e8764e](https://github.com/worktile/ngx-gantt/commit/5e8764ee7fb5167cde9a27722a899d442ce726c5))
 - **package:** new fork name ([41c2179](https://github.com/worktile/ngx-gantt/commit/41c21790e46d3f2a5074f0f2422f1c41b949caae))
 
 ## [15.1.1-0](https://github.com/worktile/ngx-gantt/compare/15.1.0...15.1.1-0) (2023-06-14)
