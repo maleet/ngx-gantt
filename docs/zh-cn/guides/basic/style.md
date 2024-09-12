@@ -1,5 +1,6 @@
 ---
 title: 样式重写
+subtitle: Style Variables
 path: 'style'
 order: 50
 ---
@@ -10,14 +11,11 @@ order: 50
 @use '@worktile/gantt/styles/variables.scss' with (
   // basic
   $gantt-color: #333,
-  $gantt-header-height: 44px,
   $gantt-border-color: #eee,
   $gantt-bg-color: #fff,
   $gantt-side-shadow: 12px 0 16px -10px rgba(0, 0, 0, 0.15),
   $gantt-container-background-color: #fafafa,
-  $gantt-item-height: 44px,
   $gantt-group-background-color: rgba($color: #f3f3f3, $alpha: 0.5),
-  $gantt-group-height: 44px,
   $gantt-table-td-padding: 0 15px,
 
   // calendar
@@ -50,3 +48,5 @@ order: 50
   $gantt-table-header-drag-line-color: #6698ff
 );
 ```
+
+`$gantt-header-height` `$gantt-group-height` 在 v17.0.0 版本已废弃，请通过 GANTT_GLOBAL_CONFIG 来自定义

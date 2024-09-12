@@ -1,7 +1,10 @@
-import { GanttLinkType, GanttLinkOptions, GanttLinkLineType } from './class/link';
 import { InjectionToken } from '@angular/core';
+import { Locale } from 'date-fns';
+import { GanttLinkLineType, GanttLinkOptions, GanttLinkType } from './class/link';
 
 export interface GanttDateFormat {
+    hour?: string;
+    day?: string;
     week?: string;
     month?: string;
     quarter?: string;
@@ -10,13 +13,28 @@ export interface GanttDateFormat {
     yearQuarter?: string;
 }
 
-export interface GanttGlobalConfig {
-    dateFormat?: GanttDateFormat;
-    linkOptions?: GanttLinkOptions;
+export interface GanttDateOptions {
+    locale?: Locale;
+    weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
-export const defaultConfig = {
+export interface GanttStyleOptions {
+    headerHeight?: number;
+    lineHeight?: number;
+    barHeight?: number;
+}
+
+export interface GanttGlobalConfig {
+    dateFormat?: GanttDateFormat;
+    dateOptions?: GanttDateOptions;
+    linkOptions?: GanttLinkOptions;
+    styleOptions?: GanttStyleOptions;
+}
+
+export const defaultConfig: GanttGlobalConfig = {
     dateFormat: {
+        hour: 'HH:mm',
+        day: 'M月d日',
         week: '第w周',
         month: 'M月',
         quarter: 'QQQ',
@@ -28,6 +46,11 @@ export const defaultConfig = {
         dependencyTypes: [GanttLinkType.fs],
         showArrow: false,
         lineType: GanttLinkLineType.curve
+    },
+    styleOptions: {
+        headerHeight: 44,
+        lineHeight: 44,
+        barHeight: 22
     }
 };
 

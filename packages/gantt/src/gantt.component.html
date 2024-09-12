@@ -2,20 +2,26 @@
   <div class="gantt-header">
     <gantt-table-header #tableHeader [columns]="columns"></gantt-table-header>
     <div class="gantt-container-header">
-      <gantt-calendar-header></gantt-calendar-header>
+      <gantt-calendar-header [style.padding-right.px]="ganttRoot.verticalScrollbarWidth"></gantt-calendar-header>
     </div>
   </div>
   <gantt-loader *ngIf="loading"></gantt-loader>
 
   <cdk-virtual-scroll-viewport
     class="gantt-virtual-scroll-viewport"
-    [ngClass]="{ 'gantt-normal-viewport': !virtualScrollEnabled }"
+    [ngClass]="{
+      'gantt-normal-viewport': !virtualScrollEnabled,
+      'gantt-scroll-container': virtualScrollEnabled,
+      'with-footer': table?.tableFooterTemplate || footerTemplate
+    }"
+    [style.top.px]="styles.headerHeight"
     [itemSize]="styles.lineHeight"
     [minBufferPx]="styles.lineHeight * 10"
     [maxBufferPx]="styles.lineHeight * 20"
+    (scrolledIndexChange)="scrolledIndexChange($event)"
   >
     <ng-container *cdkVirtualFor="let item of flatItems; trackBy: trackBy"></ng-container>
-    <div class="gantt-side" [style.width.px]="tableHeader.tableWidth + 1">
+    <div class="gantt-side" [style.width.px]="tableHeader.tableWidth + 1" [style.padding-bottom.px]="ganttRoot.horizontalScrollbarHeight">
       <div class="gantt-side-container">
         <div class="gantt-table">
           <gantt-table-body
@@ -23,14 +29,14 @@
             [viewportItems]="viewportItems"
             [columns]="columns"
             [groupTemplate]="groupTemplate"
-            [emptyTemplate]="tableEmptyTemplate"
+            [emptyTemplate]="table.tableEmptyTemplate || tableEmptyTemplate"
             [rowBeforeTemplate]="table?.rowBeforeTemplate"
             [rowAfterTemplate]="table?.rowAfterTemplate"
             [draggable]="table.draggable"
             [dropEnterPredicate]="table.dropEnterPredicate"
             (dragDropped)="table.dragDropped.emit($event)"
-            (dragStarted)="table.dragStarted.emit($event)"
-            (dragEnded)="table.dragEnded.emit($event)"
+            (dragStarted)="itemDragStarted($event)"
+            (dragEnded)="itemDragEnded($event)"
             (itemClick)="selectItem($event)"
           >
           </gantt-table-body>
@@ -38,7 +44,10 @@
       </div>
     </div>
     <div class="gantt-container">
-      <gantt-calendar-grid></gantt-calendar-grid>
+      <gantt-calendar-grid
+        [style.padding-right.px]="ganttRoot.verticalScrollbarWidth"
+        [style.padding-bottom.px]="ganttRoot.horizontalScrollbarHeight"
+      ></gantt-calendar-grid>
       <div class="gantt-main">
         <gantt-main
           [flatItems]="flatItems"
@@ -47,6 +56,7 @@
           [itemTemplate]="itemTemplate"
           [barTemplate]="barTemplate"
           [rangeTemplate]="rangeTemplate"
+          [baselineTemplate]="baselineTemplate"
           (barClick)="barClick.emit($event)"
           (lineClick)="lineClick.emit($event)"
         >
@@ -56,4 +66,29 @@
   </cdk-virtual-scroll-viewport>
 
   <gantt-drag-backdrop [style.left.px]="tableHeader.tableWidth + 1"></gantt-drag-backdrop>
+
+  <div
+    class="gantt-scrollbar"
+    [style.height.px]="ganttRoot.horizontalScrollbarHeight + 1"
+    [style.right.px]="ganttRoot.verticalScrollbarWidth"
+    [ngClass]="{ 'gantt-scrollbar-bg': table?.tableFooterTemplate }"
+  >
+    <div
+      [style.width.px]="tableHeader.tableWidth"
+      class="gantt-table-scrollbar"
+      [class.with-scrollbar]="ganttRoot.horizontalScrollbarHeight"
+    ></div>
+    <div class="gantt-main-scrollbar">
+      <div class="h-100" [style.width.px]="view.width"></div>
+    </div>
+  </div>
+
+  <div class="gantt-footer" [style.right.px]="ganttRoot.verticalScrollbarWidth" [style.bottom.px]="ganttRoot.horizontalScrollbarHeight">
+    <div class="gantt-table-footer" [style.width.px]="tableHeader.tableWidth + 1" *ngIf="table?.tableFooterTemplate">
+      <ng-template [ngTemplateOutlet]="table?.tableFooterTemplate" [ngTemplateOutletContext]="{ columns: columns }"> </ng-template>
+    </div>
+    <div class="gantt-container-footer" *ngIf="footerTemplate">
+      <ng-template [ngTemplateOutlet]="footerTemplate"> </ng-template>
+    </div>
+  </div>
 </ngx-gantt-root>

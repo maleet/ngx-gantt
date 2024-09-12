@@ -1,17 +1,17 @@
 ---
-title: 如何使用
+title: Usage
 path: usage
 order: 10
 ---
 
-## 基本使用
+## Basic usage
 
-一般情况下最基本的使用我们只需要定义 `items` 数据传入组件中（需要注意的是，目前时间格式仅支持 10 位时间戳），如需要左侧的表格展示，则还需要定义表格的 column
+In general, for the most basic usage, we only need to define the `items` data to pass into the component (note that the current time format only supports 10-digit timestamps). If you need to display the table on the left, you also need to define the table column
 
 ```html
 <ngx-gantt #gantt [items]="items">
   <ngx-gantt-table>
-    <ngx-gantt-column name="标题" width="300px">
+    <ngx-gantt-column name="Title" width="300px">
       <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
     </ngx-gantt-column>
   </ngx-gantt-table>
@@ -29,14 +29,40 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 如何设置分组
+## View configuration
 
-分组模式下我们还需要传入一个 `groups` 的数组，并且保证我们传入的 `items` 数据中设置了每个数据项的 `group_id`
+The built-in view has a set of default configurations. If the default configuration does not meet the requirements, you can pass in the specified viewOptions for custom configuration
+
+```
+<ngx-gantt #gantt [items]="items" [viewOptions]="viewOptions">
+...
+</ngx-gantt>
+
+```
+
+```javascript
+class GanttViewOptions {
+start?: GanttDate; // View start time
+end?: GanttDate; // View end time
+min?: GanttDate; // View minimum time
+max?: GanttDate; // View maximum time
+cellWidth?: number; // View minimum unit width (hourly view, the minimum unit is the width of each hour, daily view, the latest unit is the width of the daily display)
+addAmount?: number; // Horizontal scroll loading, the amount loaded each time
+addUnit?: GanttDateUtil; // The unit of the amount loaded each time when scrolling horizontally
+dateFormat?: GanttDateFormat; // Set the view date format, which can be used in multiple languages
+datePrecisionUnit?: 'day' | 'hour' | 'minute'; // Date precision unit, the default precision of the hour view is minute, and the default precision of other views is day
+dragPreviewDateFormat?: string; // Drag preview date format setting
+}
+```
+
+## How to set groups
+
+In group mode, we also need to pass in an array of `groups` and ensure that the `group_id` of each data item is set in the `items` data we pass in
 
 ```html
 <ngx-gantt #gantt [groups]="groups" [items]="items">
   <ngx-gantt-table>
-    <ngx-gantt-column name="标题" width="300px">
+    <ngx-gantt-column name="Title" width="300px">
       <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
     </ngx-gantt-column>
   </ngx-gantt-table>
@@ -56,9 +82,9 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 树形结构展示
+## Tree structure display
 
-`GanttItem` 类型包含 `children` 属性，默认情况下只要我们传入了 `children` 属性则就就会展示为树形结构。
+The `GanttItem` type contains the `children` attribute. By default, as long as we pass in the `children` attribute, it will be displayed as a tree structure.
 
 ```javascript
 export class AppGanttExampleComponent {
@@ -75,7 +101,7 @@ export class AppGanttExampleComponent {
 }
 ```
 
-如果需要异步加载子数据，我们需要设置将组件的 `async` 设置为 `true` 然后设置加载子数据的 Resolve 函数 `childrenResolve`，最后我们还需要指定哪些数据是可展开的。
+If you need to load child data asynchronously, we need to set the component's `async` to `true` and then set the Resolve function `childrenResolve` to load child data. Finally, we also need to specify which data is expandable.
 
 ```html
 <ngx-gantt #gantt [items]="items" [async]="true" [childrenResolve]="childrenResolve"> ... </ngx-gantt>
@@ -83,13 +109,13 @@ export class AppGanttExampleComponent {
 
 ```javascript
 export class AppGanttExampleComponent {
-  // 设置 expandable 为true 指定数据是可展开的
+  // Set expandable to true to specify that the data is expandable
   items: GanttItem[] = [
     { id: '000000', title: 'Task 0', start: 1627729997, end: 1628421197, expandable: true },
     { id: '000001', title: 'Task 1', start: 1617361997, end: 1625483597, expandable: true }
   ];
 
-  // 设置加载子数据的 Resolve 函数，返回值必须是一个可观察对象 Observable
+  // Set the Resolve function for loading child data. The return value must be an observable object Observable
   childrenResolve = (item: GanttItem) => {
     const children = randomItems(random(1, 5), item);
     return of(children).pipe(delay(1000));
@@ -97,9 +123,9 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 依赖
+## Dependency
 
-如果我们需要展示数据项的依赖关系，则需要设置 `GanttItem` 中的 `links` 属性，设置需要关联的 id，如果需要拖拽创建关联关系，则需要设置 `[linkable] = true`，在某些场景下可能我们需要设置某一条数据开启拖拽创建关联，我们也可以通过设置 item 数据的 `linkable` 来实现。
+If we need to display the dependency of data items, we need to set the `links` property in `GanttItem` and set the id to be associated. If we need to drag and drop to create an association, we need to set `[linkable] = true`. In some scenarios, we may need to set a certain data to enable drag and drop to create an association. We can also achieve this by setting the `linkable` of the item data.
 
 ```html
 <ngx-gantt #gantt [items]="items" [linkable]="true" (linkDragEnded)="linkDragEnded($event)"> ... </ngx-gantt>
@@ -124,9 +150,9 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 滚动加载
+## Scrolling Loading
 
-为了保证组件的性能，默认情况下只会展示一定周期的时间（不同的视图周期不同），所以组件默认开启了滚动加载。如果不需要滚动加载可以通过设置 `[disabledLoadOnScroll]=true` 来禁用。
+In order to ensure the performance of the component, by default, it will only be displayed for a certain period of time (different view periods are different), so the component has scrolling loading enabled by default. If scrolling loading is not required, it can be disabled by setting `[disabledLoadOnScroll]=true`.
 
 ```html
 <ngx-gantt #gantt [items]="items" (loadOnScroll)="loadOnScroll($event)"> ... </ngx-gantt>
@@ -148,9 +174,9 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 拖拽
+## Drag and drop
 
-通过设置 `[draggable]=true` 来启用拖拽功能，支持 `(dragStarted)`、`(dragEnded)` 事件。
+Enable the drag and drop function by setting `[draggable]=true`, and support `(dragStarted)` and `(dragEnded)` events.
 
 ```html
 <ngx-gantt #gantt [items]="items" [draggable]="true" (dragEnded)="dragEnded($event)"> ... </ngx-gantt>
@@ -169,9 +195,9 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 选择整行
+## Select the entire row
 
-通过设置 `[selectable]=true` 来启用选择整行功能，同时也可使用 `[multiple]=true` 来启用多选模式。支持 `(selectedChange)` 事件。
+Enable the entire row selection function by setting `[selectable]=true`, and you can also use `[multiple]=true` to enable multiple selection mode. Supports `(selectedChange)` event.
 
 ```html
 <ngx-gantt #gantt [items]="items" [selectable]="true" [multiple]="true" (selectedChange)="selectedChange($event)"> ... </ngx-gantt>
@@ -183,9 +209,9 @@ export class AppGanttExampleComponent {
 }
 ```
 
-## 导出为图片
+## Export as image
 
-如需要导出图片功能，我们需要在使用组件时注入图片打印服务 `GanttPrintService`
+If you need to export the image function, we need to inject the image printing service `GanttPrintService` when using the component
 
 ```javascript
 @Component({

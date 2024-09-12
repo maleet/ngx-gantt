@@ -1,5 +1,5 @@
-import { GanttViewDay } from '../day';
 import { GanttDate } from '../../utils/date';
+import { GanttViewDay } from '../day';
 import { date, today } from './mock';
 
 describe('GanttViewDay', () => {
@@ -8,18 +8,18 @@ describe('GanttViewDay', () => {
     beforeEach(() => {
         ganttViewDay = new GanttViewDay(date.start, date.end, {
             cellWidth: 20,
-            start: today.startOfYear().startOfWeek({ weekStartsOn: 1 }),
-            end: today.endOfYear().endOfWeek({ weekStartsOn: 1 })
+            start: today.startOfYear().startOfWeek(),
+            end: today.endOfYear().endOfWeek()
         });
     });
 
     it(`should has correct view start`, () => {
-        const startOfDay = ganttViewDay.startOf(date.start.date).getUnixTime();
+        const startOfDay = ganttViewDay.viewStartOf(date.start.date).getUnixTime();
         expect(startOfDay).toEqual(new GanttDate('2019-12-30 00:00:00').getUnixTime());
     });
 
     it(`should has correct view end`, () => {
-        const endOfDay = ganttViewDay.endOf(date.end.date).getUnixTime();
+        const endOfDay = ganttViewDay.viewEndOf(date.end.date).getUnixTime();
         expect(endOfDay).toEqual(new GanttDate('2021-01-03 23:59:59').getUnixTime());
     });
 

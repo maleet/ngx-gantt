@@ -5,11 +5,10 @@ import { GanttView, GanttViewDate, GanttViewOptions, primaryDatePointTop, second
 
 const viewOptions: GanttViewOptions = {
     cellWidth: 280,
-    start: new GanttDate().startOfYear().startOfWeek({ weekStartsOn: 1 }),
-    end: new GanttDate().endOfYear().endOfWeek({ weekStartsOn: 1 }),
+    start: new GanttDate().startOfYear().startOfWeek(),
+    end: new GanttDate().endOfYear().endOfWeek(),
     addAmount: 1,
-    addUnit: 'month',
-    fillDays: 1
+    addUnit: 'month'
 };
 
 export class GanttViewWeek extends GanttView {
@@ -19,12 +18,12 @@ export class GanttViewWeek extends GanttView {
         super(start, end, Object.assign({}, viewOptions, options));
     }
 
-    startOf(date: GanttDate) {
-        return date.startOfWeek({ weekStartsOn: 1 });
+    viewStartOf(date: GanttDate) {
+        return date.startOfWeek();
     }
 
-    endOf(date: GanttDate) {
-        return date.endOfWeek({ weekStartsOn: 1 });
+    viewEndOf(date: GanttDate) {
+        return date.endOfWeek();
     }
 
     getPrimaryWidth() {
@@ -36,7 +35,7 @@ export class GanttViewWeek extends GanttView {
     }
 
     getPrimaryDatePoints(): GanttDatePoint[] {
-        const weeks = eachWeekOfInterval({ start: this.start.value, end: this.end.addSeconds(1).value }, { weekStartsOn: 1 });
+        const weeks = eachWeekOfInterval({ start: this.start.value, end: this.end.addSeconds(1).value });
         const points: GanttDatePoint[] = [];
         for (let i = 0; i < weeks.length; i++) {
             const weekStart = new GanttDate(weeks[i]);
@@ -53,7 +52,7 @@ export class GanttViewWeek extends GanttView {
     }
 
     getSecondaryDatePoints(): GanttDatePoint[] {
-        const weeks = eachWeekOfInterval({ start: this.start.value, end: this.end.value });
+        const weeks = eachWeekOfInterval({ start: this.start.value, end: this.end.addSeconds(1).value });
         const points: GanttDatePoint[] = [];
         for (let i = 0; i < weeks.length; i++) {
             const start = new GanttDate(weeks[i]);

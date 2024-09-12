@@ -33,10 +33,9 @@ import {
 import { GanttView, GanttViewOptions } from './views/view';
 import { createViewFactory } from './views/factory';
 import { GanttDate } from './utils/date';
-import { GanttStyles, defaultStyles } from './gantt.styles';
 import { uniqBy, flatten, recursiveItems, getFlatItems, Dictionary, keyBy } from './utils/helpers';
 import { GanttDragContainer } from './gantt-drag-container';
-import { GANTT_GLOBAL_CONFIG, GanttGlobalConfig, defaultConfig } from './gantt.config';
+import { GANTT_GLOBAL_CONFIG, GanttGlobalConfig, GanttStyleOptions, defaultConfig } from './gantt.config';
 import { GanttLinkOptions } from './class/link';
 import { SelectionModel } from '@angular/cdk/collections';
 import { BooleanInput, coerceBooleanProperty } from '@angular/cdk/coercion';
@@ -64,7 +63,7 @@ export abstract class GanttUpper implements OnChanges, OnInit, OnDestroy {
 
     @Input() draggable: boolean;
 
-    @Input() styles: GanttStyles;
+    @Input() styles: GanttStyleOptions;
 
     @Input() showToolbar = false;
 
@@ -130,6 +129,8 @@ export abstract class GanttUpper implements OnChanges, OnInit, OnDestroy {
 
     @ContentChild('item', { static: true }) itemTemplate: TemplateRef<any>;
 
+    @ContentChild('baseline', { static: true }) baselineTemplate: TemplateRef<any>;
+
     @ContentChild('group', { static: true }) groupTemplate: TemplateRef<any>;
 
     @ContentChild('groupHeader', { static: true }) groupHeaderTemplate: TemplateRef<any>;
@@ -187,6 +188,13 @@ export abstract class GanttUpper implements OnChanges, OnInit, OnDestroy {
 
     private createView() {
         const viewDate = this.getViewDate();
+        this.viewOptions.dateFormat = Object.assign({}, defaultConfig.dateFormat, this.config.dateFormat, this.viewOptions.dateFormat);
+        this.viewOptions.styleOptions = Object.assign(
+            {},
+            defaultConfig.styleOptions,
+            this.config.styleOptions,
+            this.viewOptions.styleOptions
+        );
         this.view = createViewFactory(this.viewType, viewDate.start, viewDate.end, this.viewOptions);
     }
 
@@ -209,13 +217,13 @@ export abstract class GanttUpper implements OnChanges, OnInit, OnDestroy {
             this.originItems.forEach((origin) => {
                 const group = this.groupsMap[origin.group_id];
                 if (group) {
-                    const item = new GanttItemInternal(origin, 0, { fillDays: this.view.options?.fillDays });
+                    const item = new GanttItemInternal(origin, 0, this.view);
                     group.items.push(item);
                 }
             });
         } else {
             this.originItems.forEach((origin) => {
-                const item = new GanttItemInternal(origin, 0, { fillDays: this.view.options?.fillDays });
+                const item = new GanttItemInternal(origin, 0, this.view);
                 this.items.push(item);
             });
         }
@@ -304,8 +312,7 @@ export abstract class GanttUpper implements OnChanges, OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.styles = Object.assign({}, defaultStyles, this.styles);
-        this.viewOptions.dateFormat = Object.assign({}, defaultConfig.dateFormat, this.config.dateFormat, this.viewOptions.dateFormat);
+        this.styles = Object.assign({}, defaultConfig.styleOptions, this.config.styleOptions, this.styles);
         this.createView();
         this.setupGroups();
         this.setupItems();

@@ -1,39 +1,55 @@
+import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport, ViewportRuler } from '@angular/cdk/scrolling';
+import { NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
-    Component,
-    OnInit,
-    ElementRef,
-    ChangeDetectionStrategy,
-    Input,
-    EventEmitter,
-    Output,
-    ChangeDetectorRef,
-    NgZone,
-    ContentChildren,
-    QueryList,
+    AfterViewChecked,
     AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
     ContentChild,
-    TemplateRef,
-    forwardRef,
+    ContentChildren,
+    ElementRef,
+    EventEmitter,
     Inject,
-    ViewChild,
-    Optional,
+    Input,
+    NgZone,
     OnChanges,
-    SimpleChanges
+    OnInit,
+    Output,
+    QueryList,
+    SimpleChanges,
+    TemplateRef,
+    ViewChild,
+    forwardRef
 } from '@angular/core';
-import { takeUntil, take, finalize, skip } from 'rxjs/operators';
 import { Observable, from } from 'rxjs';
-import { GanttUpper, GANTT_UPPER_TOKEN } from './gantt-upper';
-import { GanttLinkDragEvent, GanttLineClickEvent, GanttItemInternal, GanttItem, GanttSelectedEvent, GanttGroupInternal } from './class';
+import { finalize, skip, take, takeUntil } from 'rxjs/operators';
+import {
+    GanttGroupInternal,
+    GanttItem,
+    GanttItemInternal,
+    GanttLineClickEvent,
+    GanttLinkDragEvent,
+    GanttSelectedEvent,
+    GanttTableDragEndedEvent,
+    GanttTableDragStartedEvent,
+    GanttVirtualScrolledIndexChangeEvent
+} from './class';
+import { GanttCalendarGridComponent } from './components/calendar/grid/calendar-grid.component';
+import { GanttCalendarHeaderComponent } from './components/calendar/header/calendar-header.component';
+import { GanttDragBackdropComponent } from './components/drag-backdrop/drag-backdrop.component';
+import { GanttLoaderComponent } from './components/loader/loader.component';
+import { GanttMainComponent } from './components/main/gantt-main.component';
+import { GanttTableBodyComponent } from './components/table/body/gantt-table-body.component';
+import { GanttTableHeaderComponent } from './components/table/header/gantt-table-header.component';
+import { GANTT_ABSTRACT_TOKEN } from './gantt-abstract';
+import { GANTT_UPPER_TOKEN, GanttUpper } from './gantt-upper';
+import { GANTT_GLOBAL_CONFIG, GanttGlobalConfig } from './gantt.config';
+import { NgxGanttRootComponent } from './root.component';
 import { NgxGanttTableColumnComponent } from './table/gantt-column.component';
 import { NgxGanttTableComponent } from './table/gantt-table.component';
-import { GANTT_ABSTRACT_TOKEN } from './gantt-abstract';
-import { GanttGlobalConfig, GANTT_GLOBAL_CONFIG } from './gantt.config';
-import { NgxGanttRootComponent } from './root.component';
 import { GanttDate } from './utils/date';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Dictionary, keyBy, recursiveItems, uniqBy } from './utils/helpers';
-import { GanttPrintService } from './gantt-print.service';
-import { InputBoolean } from 'ngx-tethys/core';
 @Component({
     selector: 'ngx-gantt',
     templateUrl: './gantt.component.html',
@@ -47,9 +63,26 @@ import { InputBoolean } from 'ngx-tethys/core';
             provide: GANTT_ABSTRACT_TOKEN,
             useExisting: forwardRef(() => NgxGanttComponent)
         }
+    ],
+    standalone: true,
+    imports: [
+        NgxGanttRootComponent,
+        GanttTableHeaderComponent,
+        GanttCalendarHeaderComponent,
+        NgIf,
+        GanttLoaderComponent,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        NgClass,
+        CdkVirtualForOf,
+        GanttTableBodyComponent,
+        GanttCalendarGridComponent,
+        GanttMainComponent,
+        GanttDragBackdropComponent,
+        NgTemplateOutlet
     ]
 })
-export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, AfterViewInit {
+export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, AfterViewInit, AfterViewChecked {
     @Input() maxLevel = 2;
 
     @Input() async: boolean;
@@ -74,9 +107,9 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
         }
     }
 
-    @Input() @InputBoolean() virtualScrollEnabled = true;
+    @Input() virtualScrollEnabled = true;
 
-    @Input() loadingDelay: number = 0;
+    @Input() loadingDelay = 0;
 
     @Output() linkDragStarted = new EventEmitter<GanttLinkDragEvent>();
 
@@ -86,13 +119,18 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
 
     @Output() selectedChange = new EventEmitter<GanttSelectedEvent>();
 
+    @Output() virtualScrolledIndexChange = new EventEmitter<GanttVirtualScrolledIndexChangeEvent>();
+
     @ContentChild(NgxGanttTableComponent) override table: NgxGanttTableComponent;
 
     @ContentChildren(NgxGanttTableColumnComponent, { descendants: true }) columns: QueryList<NgxGanttTableColumnComponent>;
 
+    // 此模版已挪到 table 组件下，为了兼容此处暂时保留
     @ContentChild('tableEmpty', { static: true }) tableEmptyTemplate: TemplateRef<any>;
 
     @ViewChild('ganttRoot') ganttRoot: NgxGanttRootComponent;
+
+    @ContentChild('footer', { static: true }) footerTemplate: TemplateRef<any>;
 
     @ViewChild(CdkVirtualScrollViewport) virtualScroll: CdkVirtualScrollViewport;
 
@@ -108,17 +146,19 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
 
     private loadingTimer;
 
-    private rangeStart: number;
+    private rangeStart = 0;
 
-    private rangeEnd: number;
+    private rangeEnd = 0;
 
     private flatItemsMap: Dictionary<GanttGroupInternal | GanttItemInternal>;
+
+    private draggingItem: GanttItem;
 
     constructor(
         elementRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         ngZone: NgZone,
-        @Optional() private printService: GanttPrintService,
+        private viewportRuler: ViewportRuler,
         @Inject(GANTT_GLOBAL_CONFIG) config: GanttGlobalConfig
     ) {
         super(elementRef, cdr, ngZone, config);
@@ -135,10 +175,6 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
         // using `zone-patch-rxjs` because it'll trigger a change detection when it unsubscribes.
         this.ngZone.runOutsideAngular(() => {
             onStable$.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
-                // this.dragContainer.dragEnded.subscribe((event) => {
-                //     this.computeTempDataRefs();
-                // });
-
                 this.dragContainer.linkDragStarted.pipe(takeUntil(this.unsubscribe$)).subscribe((event: GanttLinkDragEvent) => {
                     this.linkDragStarted.emit(event);
                 });
@@ -182,7 +218,22 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
                 this.rangeStart = range.start;
                 this.rangeEnd = range.end;
                 this.viewportItems = this.flatItems.slice(range.start, range.end);
+                this.appendDraggingItemToViewportItems();
                 this.computeTempDataRefs();
+            });
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.virtualScrollEnabled && this.viewportRuler && this.virtualScroll.getRenderedRange().end > 0) {
+            const onStable$ = this.ngZone.isStable ? from(Promise.resolve()) : this.ngZone.onStable.pipe(take(1));
+            this.ngZone.runOutsideAngular(() => {
+                onStable$.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
+                    if (!this.ganttRoot.verticalScrollbarWidth) {
+                        this.ganttRoot.computeScrollBarOffset();
+                        this.cdr.markForCheck();
+                    }
+                });
             });
         }
     }
@@ -206,7 +257,7 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
         this.flatItemsMap = keyBy(this.flatItems, 'id');
         if (!this.virtualScrollEnabled) {
             this.rangeStart = 0;
-            this.rangeEnd = this.flatItems.length - 1;
+            this.rangeEnd = this.flatItems.length;
         }
     }
 
@@ -233,6 +284,22 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
         this.computeItemsRefs(...uniqBy(tempItemData, 'id'));
         this.flatItems = [...this.flatItems];
         this.viewportItems = [...this.viewportItems];
+    }
+
+    private appendDraggingItemToViewportItems() {
+        if (this.draggingItem) {
+            let flatItem = this.viewportItems.find((item) => {
+                return item.id === this.draggingItem.id;
+            });
+            if (!flatItem) {
+                flatItem = this.flatItems.find((item) => {
+                    return item.id === this.draggingItem.id;
+                });
+                if (flatItem) {
+                    this.viewportItems.push(flatItem);
+                }
+            }
+        }
     }
 
     expandChildren(item: GanttItemInternal) {
@@ -276,10 +343,10 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
         const selectedIds = this.selectionModel.selected;
         if (this.multiple) {
             const _selectedValue = this.getGanttItems(selectedIds).map((item) => item.origin);
-            this.selectedChange.emit({ event, selectedValue: _selectedValue });
+            this.selectedChange.emit({ event, current: selectedValue as GanttItem, selectedValue: _selectedValue });
         } else {
             const _selectedValue = this.getGanttItem(selectedIds[0])?.origin;
-            this.selectedChange.emit({ event, selectedValue: _selectedValue });
+            this.selectedChange.emit({ event, current: selectedValue as GanttItem, selectedValue: _selectedValue });
         }
     }
 
@@ -289,6 +356,17 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
 
     scrollToDate(date: number | GanttDate) {
         this.ganttRoot.scrollToDate(date);
+    }
+
+    scrolledIndexChange(index: number) {
+        this.virtualScrolledIndexChange.emit({
+            index,
+            renderedRange: {
+                start: this.rangeStart,
+                end: this.rangeEnd
+            },
+            count: this.flatItems.length
+        });
     }
 
     override expandGroups(expanded: boolean) {
@@ -306,5 +384,15 @@ export class NgxGanttComponent extends GanttUpper implements OnInit, OnChanges, 
         this.afterExpand();
         this.expandChange.emit();
         this.cdr.detectChanges();
+    }
+
+    itemDragStarted(event: GanttTableDragStartedEvent) {
+        this.table.dragStarted.emit(event);
+        this.draggingItem = event.source;
+    }
+
+    itemDragEnded(event: GanttTableDragEndedEvent) {
+        this.table.dragEnded.emit(event);
+        this.draggingItem = null;
     }
 }
