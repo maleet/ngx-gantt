@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.2-3](https://github.com/worktile/ngx-gantt/compare/18.0.2-2...18.0.2-3) (2024-09-12)
+
+### Features
+
+- change date ([0c60949](https://github.com/worktile/ngx-gantt/commit/0c60949a112a350b283c1603f4f7eac0cb4176b3))
+
 ## [18.0.2-2](https://github.com/worktile/ngx-gantt/compare/18.0.2-1...18.0.2-2) (2024-09-12)
 
 ## [18.0.2-1](https://github.com/worktile/ngx-gantt/compare/18.0.1...18.0.2-1) (2024-09-12)
