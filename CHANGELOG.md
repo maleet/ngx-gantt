@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.2-0](https://github.com/worktile/ngx-gantt/compare/18.0.1...18.0.2-0) (2024-09-12)
+
+### Features
+
+- **view:** minimum change for custom hour view ([4e43f49](https://github.com/worktile/ngx-gantt/commit/4e43f497338d9d9fb652d287c266c08ad7e20128))
+
 ## [18.0.1](https://github.com/worktile/ngx-gantt/compare/18.0.0...18.0.1) (2024-09-09)
 
 ### Features
