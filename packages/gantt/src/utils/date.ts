@@ -29,10 +29,12 @@ import {
     startOfMinute,
     startOfHour,
     endOfHour,
-    endOfMinute
+    endOfMinute,
+    Locale
 } from 'date-fns';
 
 export {
+    Locale,
     addDays,
     addHours,
     addMinutes,
