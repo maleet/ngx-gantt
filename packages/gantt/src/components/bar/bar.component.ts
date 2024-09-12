@@ -24,6 +24,7 @@ import { barBackground } from '../../gantt.styles';
 import { GanttBarClickEvent } from '../../class';
 import { GANTT_UPPER_TOKEN, GanttUpper } from '../../gantt-upper';
 import { GanttItemUpper } from '../../gantt-item-upper';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
 
 function linearGradient(sideOrCorner: string, color: string, stop: string) {
     return `linear-gradient(${sideOrCorner},${color} 0%,${stop} 40%)`;
@@ -32,7 +33,9 @@ function linearGradient(sideOrCorner: string, color: string, stop: string) {
 @Component({
     selector: 'ngx-gantt-bar,gantt-bar',
     templateUrl: './bar.component.html',
-    providers: [GanttBarDrag]
+    providers: [GanttBarDrag],
+    standalone: true,
+    imports: [NgIf, NgTemplateOutlet]
 })
 export class NgxGanttBarComponent extends GanttItemUpper implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Output() barClick = new EventEmitter<GanttBarClickEvent>();
@@ -55,7 +58,11 @@ export class NgxGanttBarComponent extends GanttItemUpper implements OnInit, Afte
 
     override ngOnInit() {
         super.ngOnInit();
+        this.dragContainer.dragStarted.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
+            this.elementRef.nativeElement.style.pointerEvents = 'none';
+        });
         this.dragContainer.dragEnded.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
+            this.elementRef.nativeElement.style.pointerEvents = '';
             this.setContentBackground();
         });
     }
@@ -121,17 +128,25 @@ export class NgxGanttBarComponent extends GanttItemUpper implements OnInit, Afte
             const contentElement = this.contentElementRef.nativeElement;
             const color = this.item.color || barBackground;
             const style: Partial<CSSStyleDeclaration> = this.item.barStyle || {};
+            const barElement = this.elementRef.nativeElement;
+
             if (this.item.origin.start && this.item.origin.end) {
                 style.background = color;
                 style.borderRadius = '';
             }
             if (this.item.origin.start && !this.item.origin.end) {
                 style.background = linearGradient('to left', hexToRgb(color, 0.55), hexToRgb(color, 1));
-                style.borderRadius = '4px 12.5px 12.5px 4px';
+
+                const borderRadius = '4px 12.5px 12.5px 4px';
+                style.borderRadius = borderRadius;
+                barElement.style.borderRadius = borderRadius;
             }
             if (!this.item.origin.start && this.item.origin.end) {
                 style.background = linearGradient('to right', hexToRgb(color, 0.55), hexToRgb(color, 1));
-                style.borderRadius = '12.5px 4px 4px 12.5px';
+
+                const borderRadius = '12.5px 4px 4px 12.5px';
+                style.borderRadius = borderRadius;
+                barElement.style.borderRadius = borderRadius;
             }
             if (this.item.progress >= 0) {
                 const contentProgressElement = contentElement.querySelector('.gantt-bar-content-progress') as HTMLDivElement;

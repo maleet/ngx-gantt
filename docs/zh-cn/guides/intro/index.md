@@ -1,5 +1,6 @@
 ---
 title: 介绍
+subtitle: Intro
 path: 'intro'
 order: 1
 ---
@@ -10,7 +11,7 @@ order: 1
 
 # 特性
 
-- 5 种视图（日、周、月、季、年）
+- 6 种内置视图（时、日、周、月、季、年），并支持自定义视图
 - 任务分组展示
 - 树形结构数据展示并支持异步加载
 - 任务前后置依赖关联及展示
@@ -38,7 +39,7 @@ order: 1
 
 ## 支持 Angular 版本
 
-`ngx-gantt` 与 `@angular/core` 保持相同的主版本号，目前支持 Angular ^12.0.0 版本。
+`ngx-gantt` 与 `@angular/core` 保持相同的主版本号，目前支持 Angular ^17.0.0 版本。
 
 ## 依赖第三方库
 

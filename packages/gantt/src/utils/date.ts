@@ -1,71 +1,77 @@
 import {
-    addYears,
-    addMonths,
     addDays,
-    addWeeks,
+    addHours,
+    addMinutes,
+    addMonths,
     addQuarters,
-    getUnixTime,
-    startOfDay,
-    startOfWeek,
-    startOfMonth,
-    startOfQuarter,
-    startOfYear,
+    addSeconds,
+    addWeeks,
+    addYears,
+    differenceInCalendarDays,
     endOfDay,
-    endOfWeek,
     endOfMonth,
     endOfQuarter,
+    endOfWeek,
     endOfYear,
     format,
     fromUnixTime,
     getDaysInMonth,
-    addSeconds,
-    setDate,
-    addMinutes,
-    addHours,
-    differenceInCalendarDays,
-    isWeekend,
+    getUnixTime,
     getWeek,
     isToday,
-    differenceInDays,
-    differenceInCalendarQuarters,
-    eachMonthOfInterval,
-    eachWeekOfInterval,
-    eachDayOfInterval
+    isWeekend,
+    setDate,
+    startOfDay,
+    startOfMonth,
+    startOfQuarter,
+    startOfWeek,
+    startOfYear,
+    startOfMinute,
+    startOfHour,
+    endOfHour,
+    endOfMinute
 } from 'date-fns';
 
 export {
-    addYears,
-    addMonths,
+    Locale,
     addDays,
-    addWeeks,
+    addHours,
+    addMinutes,
+    addMonths,
     addQuarters,
-    getUnixTime,
-    startOfDay,
-    startOfWeek,
-    startOfMonth,
-    startOfQuarter,
-    startOfYear,
+    addSeconds,
+    addWeeks,
+    addYears,
+    differenceInCalendarDays,
+    differenceInCalendarQuarters,
+    differenceInDays,
+    eachDayOfInterval,
+    eachMonthOfInterval,
+    eachWeekOfInterval,
     endOfDay,
-    endOfWeek,
     endOfMonth,
     endOfQuarter,
+    endOfWeek,
     endOfYear,
     format,
     fromUnixTime,
     getDaysInMonth,
-    addSeconds,
-    setDate,
-    addMinutes,
-    addHours,
-    differenceInCalendarDays,
-    isWeekend,
+    getUnixTime,
     getWeek,
     isToday,
-    differenceInDays,
-    differenceInCalendarQuarters,
-    eachMonthOfInterval,
-    eachWeekOfInterval,
-    eachDayOfInterval
+    isWeekend,
+    setDate,
+    startOfDay,
+    startOfMonth,
+    startOfQuarter,
+    startOfWeek,
+    startOfYear,
+    startOfMinute,
+    startOfHour,
+    endOfMinute,
+    endOfHour,
+    differenceInMinutes,
+    eachHourOfInterval
 } from 'date-fns';
 
 export type GanttDateUtil = 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
@@ -130,7 +136,7 @@ export class GanttDate {
         return this.value.getMilliseconds();
     }
 
-    getWeek(options: { locale?: Locale; weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 } = { weekStartsOn: 1 }): number {
+    getWeek(options?: { locale?: Locale; weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 }): number {
         return getWeek(this.value, options);
     }
 
@@ -209,6 +215,14 @@ export class GanttDate {
         return new GanttDate(addYears(this.value, amount));
     }
 
+    startOfMinute(): GanttDate {
+        return new GanttDate(startOfMinute(this.value));
+    }
+
+    startOfHour(): GanttDate {
+        return new GanttDate(startOfHour(this.value));
+    }
+
     startOfDay(): GanttDate {
         return new GanttDate(startOfDay(this.value));
     }
@@ -227,6 +241,14 @@ export class GanttDate {
 
     startOfYear(): GanttDate {
         return new GanttDate(startOfYear(this.value));
+    }
+
+    endOfMinute(): GanttDate {
+        return new GanttDate(endOfMinute(this.value));
+    }
+
+    endOfHour(): GanttDate {
+        return new GanttDate(endOfHour(this.value));
     }
 
     endOfDay(): GanttDate {

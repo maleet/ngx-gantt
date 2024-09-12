@@ -29,11 +29,15 @@ import { coerceCssPixelValue } from '@angular/cdk/coercion';
 import { GanttAbstractComponent, GANTT_ABSTRACT_TOKEN } from '../../../gantt-abstract';
 import { defaultColumnWidth } from '../header/gantt-table-header.component';
 import { GanttUpper, GANTT_UPPER_TOKEN } from '../../../gantt-upper';
-import { CdkDrag, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, DragRef } from '@angular/cdk/drag-drop';
-import { DOCUMENT } from '@angular/common';
+import { CdkDrag, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, DragRef, CdkDropList, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { DOCUMENT, NgIf, NgTemplateOutlet, NgFor, NgClass } from '@angular/common';
+import { IsGanttRangeItemPipe } from '../../../gantt.pipe';
+import { GanttIconComponent } from '../../icon/icon.component';
 @Component({
     selector: 'gantt-table-body',
-    templateUrl: './gantt-table-body.component.html'
+    templateUrl: './gantt-table-body.component.html',
+    standalone: true,
+    imports: [CdkDropList, NgIf, GanttIconComponent, NgTemplateOutlet, NgFor, NgClass, CdkDrag, CdkDragHandle, IsGanttRangeItemPipe]
 })
 export class GanttTableBodyComponent implements OnInit, OnDestroy, AfterViewInit {
     private _viewportItems: (GanttGroupInternal | GanttItemInternal)[];
@@ -217,9 +221,15 @@ export class GanttTableBodyComponent implements OnInit, OnDestroy, AfterViewInit
 
     onItemDragEnded(event: CdkDragEnd<GanttItemInternal>) {
         this.ganttTableDragging = false;
+
         this.dragEnded.emit({
             source: event.source.data?.origin,
             sourceParent: this.getParentByItem(event.source.data)?.origin
+        });
+        // dropEnterPredicate 方法返回值为 false 时，始终未执行 onListDropped，所以只能在 dragEnded 中移除 drag-item-hide
+        const children = this.getChildrenElementsByElement(event.source.element.nativeElement);
+        children.forEach((element) => {
+            element.classList.remove('drag-item-hide');
         });
     }
 

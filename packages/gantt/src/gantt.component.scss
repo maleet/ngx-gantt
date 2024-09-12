@@ -18,12 +18,10 @@
     border-right: 1px solid variables.$gantt-border-color;
     position: relative;
     z-index: 3;
-    // overflow-x: scroll;
     box-shadow: variables.$gantt-side-shadow;
 
     .gantt-side-header {
       box-sizing: border-box;
-      height: variables.$gantt-header-height;
     }
 
     .gantt-side-container {
@@ -49,18 +47,46 @@
     background-color: variables.$gantt-container-background-color;
   }
 
+  .gantt-scrollbar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 3;
+    display: flex;
+
+    &.gantt-scrollbar-bg {
+      background-color: variables.$gantt-container-background-color;
+
+      .gantt-table-scrollbar {
+        &.with-scrollbar {
+          border-right: 1px solid variables.$gantt-border-color;
+          z-index: 3;
+          box-shadow: variables.$gantt-scrollbar-shadow;
+        }
+      }
+    }
+
+    .gantt-table-scrollbar {
+      &.with-scrollbar {
+        overflow-x: scroll;
+      }
+    }
+    .gantt-main-scrollbar {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+  }
+
   .gantt-main-container {
     width: 100%;
-    height: calc(100% - #{variables.$gantt-header-height});
     flex: 1;
     position: absolute;
-    top: variables.$gantt-header-height;
     bottom: 0;
     left: 0;
     right: 0;
-    // 兼容火狐浏览器
     overflow: auto;
-    overflow: overlay;
     background-color: variables.$gantt-container-background-color;
 
     .gantt-main-groups,
@@ -70,7 +96,6 @@
     }
 
     .gantt-group {
-      height: variables.$gantt-group-height;
       background: variables.$gantt-group-background-color;
       border-bottom: 1px solid variables.$gantt-border-color;
       box-sizing: border-box;
@@ -94,13 +119,20 @@
   .gantt-virtual-scroll-viewport {
     position: absolute;
     left: 0;
-    top: variables.$gantt-header-height;
     right: 0;
     bottom: 0;
     z-index: 2;
-    // 兼容火狐浏览器
     overflow: auto;
-    overflow: overlay;
+
+    &.with-footer {
+      .gantt-table-body {
+        padding-bottom: variables.$gantt-footer-height;
+      }
+      .gantt-main-groups,
+      .gantt-main-items {
+        padding-bottom: variables.$gantt-footer-height;
+      }
+    }
     .cdk-virtual-scroll-content-wrapper {
       width: 100%;
       min-width: unset;
@@ -110,6 +142,17 @@
         .gantt-main-container {
           height: 100%;
           top: 0;
+          overflow-y: hidden;
+        }
+      }
+    }
+
+    &.gantt-scroll-container {
+      .gantt-container {
+        .gantt-main-container {
+          &::-webkit-scrollbar {
+            position: static;
+          }
         }
       }
     }
@@ -120,6 +163,11 @@
       }
       .cdk-virtual-scroll-spacer {
         display: none;
+      }
+      .gantt-container {
+        .gantt-main-container {
+          overflow-y: auto;
+        }
       }
     }
   }
@@ -133,5 +181,33 @@
     flex: 1;
     overflow: hidden;
     background-color: #fafafa;
+  }
+}
+
+.gantt-footer {
+  display: flex;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  background-color: white;
+  border-top: 1px solid variables.$gantt-border-color;
+  border-bottom: 1px solid variables.$gantt-border-color;
+
+  .gantt-table-footer {
+    height: variables.$gantt-footer-height;
+    border-right: 1px solid variables.$gantt-border-color;
+    box-shadow: variables.$gantt-footer-shadow;
+  }
+
+  .gantt-container-footer {
+    height: variables.$gantt-footer-height;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

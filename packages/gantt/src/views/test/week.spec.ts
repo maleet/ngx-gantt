@@ -8,18 +8,18 @@ describe('GanttViewWeek', () => {
     beforeEach(() => {
         ganttViewWeek = new GanttViewWeek(date.start, date.end, {
             cellWidth: 140,
-            start: today.startOfYear().startOfWeek({ weekStartsOn: 1 }),
-            end: today.endOfYear().endOfWeek({ weekStartsOn: 1 })
+            start: today.startOfYear().startOfWeek(),
+            end: today.endOfYear().endOfWeek()
         });
     });
 
     it(`should has correct view start`, () => {
-        const startOfWeek = ganttViewWeek.startOf(date.start.date).getUnixTime();
+        const startOfWeek = ganttViewWeek.viewStartOf(date.start.date).getUnixTime();
         expect(startOfWeek).toEqual(new GanttDate('2019-12-30 00:00:00').getUnixTime());
     });
 
     it(`should has correct view end`, () => {
-        const endOfWeek = ganttViewWeek.endOf(date.end.date).getUnixTime();
+        const endOfWeek = ganttViewWeek.viewEndOf(date.end.date).getUnixTime();
         expect(endOfWeek).toEqual(new GanttDate('2021-01-03 23:59:59').getUnixTime());
     });
 

@@ -148,6 +148,9 @@ $gantt-bar-link-drop-border: 5px;
     background: variables.$gantt-bar-background-color;
     overflow: hidden;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
 
     .gantt-bar-content-progress {
       position: absolute;
@@ -169,6 +172,10 @@ $gantt-bar-link-drop-border: 5px;
     .gantt-bar-content {
       box-shadow: none;
     }
+  }
+
+  &-draggable-drag {
+    z-index: 1001;
   }
 
   &-drop-active {

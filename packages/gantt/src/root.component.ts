@@ -9,7 +9,8 @@ import {
     Input,
     Optional,
     OnDestroy,
-    ViewChild
+    ViewChild,
+    HostListener
 } from '@angular/core';
 import { GanttDomService, ScrollDirection } from './gantt-dom.service';
 import { GanttDragContainer } from './gantt-drag-container';
@@ -20,6 +21,11 @@ import { GanttPrintService } from './gantt-print.service';
 import { passiveListenerOptions } from './utils/passive-listeners';
 import { GanttDragBackdropComponent } from './components/drag-backdrop/drag-backdrop.component';
 import { GanttDate } from './utils/date';
+import { NgxGanttToolbarComponent } from './components/toolbar/toolbar.component';
+import { GanttCalendarGridComponent } from './components/calendar/grid/calendar-grid.component';
+import { GanttCalendarHeaderComponent } from './components/calendar/header/calendar-header.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
     selector: 'ngx-gantt-root',
@@ -27,7 +33,17 @@ import { GanttDate } from './utils/date';
     providers: [GanttDomService, GanttDragContainer],
     host: {
         class: 'gantt'
-    }
+    },
+    standalone: true,
+    imports: [
+        NgIf,
+        CdkScrollable,
+        NgTemplateOutlet,
+        GanttCalendarHeaderComponent,
+        GanttCalendarGridComponent,
+        GanttDragBackdropComponent,
+        NgxGanttToolbarComponent
+    ]
 })
 export class NgxGanttRootComponent implements OnInit, OnDestroy {
     @Input() sideWidth: number;
@@ -39,10 +55,19 @@ export class NgxGanttRootComponent implements OnInit, OnDestroy {
     /** The native `<gantt-drag-backdrop></gantt-drag-backdrop>` element. */
     @ViewChild(GanttDragBackdropComponent, { static: true, read: ElementRef }) backdrop: ElementRef<HTMLElement>;
 
+    verticalScrollbarWidth = 0;
+
+    horizontalScrollbarHeight = 0;
+
     private unsubscribe$ = new Subject<void>();
 
     private get view() {
         return this.ganttUpper.view;
+    }
+
+    @HostListener('window:resize')
+    onWindowResize() {
+        this.computeScrollBarOffset();
     }
 
     constructor(
@@ -65,6 +90,7 @@ export class NgxGanttRootComponent implements OnInit, OnDestroy {
         this.ngZone.runOutsideAngular(() => {
             onStable$.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
                 this.dom.initialize(this.elementRef);
+
                 if (this.printService) {
                     this.printService.register(this.elementRef);
                 }
@@ -76,8 +102,24 @@ export class NgxGanttRootComponent implements OnInit, OnDestroy {
                 this.ganttUpper.viewChange.pipe(startWith<null, null>(null), takeUntil(this.unsubscribe$)).subscribe(() => {
                     this.scrollToToday();
                 });
+                this.computeScrollBarOffset();
             });
         });
+    }
+
+    computeScrollBarOffset() {
+        const ganttMainContainer = this.dom.mainContainer as HTMLElement;
+        const ganttVerticalScrollContainer = this.dom.verticalScrollContainer as HTMLElement;
+
+        let verticalScrollbarWidth = 0;
+        if (ganttVerticalScrollContainer) {
+            verticalScrollbarWidth = ganttVerticalScrollContainer.offsetWidth - ganttVerticalScrollContainer.clientWidth;
+        } else {
+            verticalScrollbarWidth = ganttMainContainer?.offsetWidth - ganttMainContainer?.clientWidth;
+        }
+        const horizontalScrollbarHeight = ganttMainContainer?.offsetHeight - ganttMainContainer?.clientHeight;
+        this.verticalScrollbarWidth = verticalScrollbarWidth;
+        this.horizontalScrollbarHeight = horizontalScrollbarHeight;
     }
 
     ngOnDestroy(): void {

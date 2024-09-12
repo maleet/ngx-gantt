@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.1](https://github.com/worktile/ngx-gantt/compare/18.0.0...18.0.1) (2024-09-09)
+
+### Features
+
+- **gantt:** 优化甘特图底部横向滚动条展示在窗口可视区域 ([#482](https://github.com/worktile/ngx-gantt/issues/482)) ([fa55097](https://github.com/worktile/ngx-gantt/commit/fa550976c53e26ffd4fe8854d869b21d2d9b49b1))
+
+# [18.0.0](https://github.com/worktile/ngx-gantt/compare/18.0.0-next.0...18.0.0) (2024-08-22)
+
+# [18.0.0-next.0](https://github.com/worktile/ngx-gantt/compare/17.0.0-next.0...18.0.0-next.0) (2024-08-16)
+
+### Bug Fixes
+
+- fix today line position in hour view [#452](https://github.com/worktile/ngx-gantt/issues/452) ([4b7d61a](https://github.com/worktile/ngx-gantt/commit/4b7d61a18ce62d6fa58944855eb5d44b9633fc63))
+
+### Features
+
+- create english translation documentation ([404f185](https://github.com/worktile/ngx-gantt/commit/404f1852358ab8c2dee55072799a2c9fa18788f0))
+- support custom header and item height [#431](https://github.com/worktile/ngx-gantt/issues/431) ([#449](https://github.com/worktile/ngx-gantt/issues/449)) ([986ed80](https://github.com/worktile/ngx-gantt/commit/986ed8048c4ac0c0f0a42c661fe0f131a4750b48))
+
+# [17.0.0-next.0](https://github.com/worktile/ngx-gantt/compare/16.0.3...17.0.0-next.0) (2024-03-11)
+
+### Bug Fixes
+
+- remove invalid drag drop style [#43](https://github.com/worktile/ngx-gantt/issues/43) 9 ([5ba4d10](https://github.com/worktile/ngx-gantt/commit/5ba4d10257f08d92586d1098dece138ec7cd2bbf))
+
+### Features
+
+- add date options for supported date locale and weekStartsOn [#436](https://github.com/worktile/ngx-gantt/issues/436) [#242](https://github.com/worktile/ngx-gantt/issues/242) ([#445](https://github.com/worktile/ngx-gantt/issues/445)) ([861499a](https://github.com/worktile/ngx-gantt/commit/861499ace113db1e7a19feb2297e5485207454ee))
+- support hour view [#375](https://github.com/worktile/ngx-gantt/issues/375) [#298](https://github.com/worktile/ngx-gantt/issues/298) #INFR-4223 ([#443](https://github.com/worktile/ngx-gantt/issues/443)) ([fad93c1](https://github.com/worktile/ngx-gantt/commit/fad93c16095f729b38ddc75bcabaf9196dfcd779)), closes [#INFR-4223](https://github.com/worktile/ngx-gantt/issues/INFR-4223)
+
+## [16.0.3](https://github.com/worktile/ngx-gantt/compare/16.0.2...16.0.3) (2023-12-28)
+
+### Bug Fixes
+
+- append draggingItem to viewportItems when draggingItem not render ([#432](https://github.com/worktile/ngx-gantt/issues/432)) ([1043cc4](https://github.com/worktile/ngx-gantt/commit/1043cc456fae3ccb96e28ed7ea95cc035264993e))
+
+## [16.0.1](https://github.com/worktile/ngx-gantt/compare/16.0.0...16.0.1) (2023-08-30)
+
+### Features
+
+- **baseline:** #INFR-9182 support baseline template ([32b2295](https://github.com/worktile/ngx-gantt/commit/32b229574b3d526fb1b21c3c614b855e99182458)), closes [#INFR-9182](https://github.com/worktile/ngx-gantt/issues/INFR-9182)
+
+# [16.0.0](https://github.com/worktile/ngx-gantt/compare/16.0.0-next.0...16.0.0) (2023-08-23)
+
+# [16.0.0-next.0](https://github.com/worktile/ngx-gantt/compare/15.2.0...16.0.0-next.0) (2023-08-17)
+
+# [15.2.0](https://github.com/worktile/ngx-gantt/compare/15.1.4...15.2.0) (2023-08-17)
+
+### Features
+
+- merge v15.2.0-next ([65aa1f3](https://github.com/worktile/ngx-gantt/commit/65aa1f31112df8358d2cbbc0a1774db7bcfa86be))
+
+## [15.1.4](https://github.com/worktile/ngx-gantt/compare/15.1.3...15.1.4) (2023-08-03)
+
+### Features
+
+- export components ([45c978a](https://github.com/worktile/ngx-gantt/commit/45c978a6fa9a49bbf3fbf144e4b89c8384b903db))
+- export components ([5a46f9d](https://github.com/worktile/ngx-gantt/commit/5a46f9d4b3840a1086820e2e315661b992f3af7e))
+- remove the redundant white border #INFR-9002 ([a5ecd75](https://github.com/worktile/ngx-gantt/commit/a5ecd75a53501e1147bb784d8e4359ec1edc7cf8)), closes [#INFR-9002](https://github.com/worktile/ngx-gantt/issues/INFR-9002)
+- remove the redundant white border at gantt bar #INFR-9002 ([47da959](https://github.com/worktile/ngx-gantt/commit/47da95918919e28e9a108f5b3e94760644fe42ee)), closes [#INFR-9002](https://github.com/worktile/ngx-gantt/issues/INFR-9002)
+
+## [15.1.3](https://github.com/worktile/ngx-gantt/compare/15.1.2...15.1.3) (2023-08-02)
+
+### Bug Fixes
+
+- add bar index when drag #INFR-8617 ([#404](https://github.com/worktile/ngx-gantt/issues/404)) ([a17bf27](https://github.com/worktile/ngx-gantt/commit/a17bf27a6619b75f34920e277263c1d0f7ff6cb9)), closes [#INFR-8617](https://github.com/worktile/ngx-gantt/issues/INFR-8617) [#INFR-8617](https://github.com/worktile/ngx-gantt/issues/INFR-8617)
+
+## [15.1.2](https://github.com/worktile/ngx-gantt/compare/15.1.1...15.1.2) (2023-07-19)
+
+### Bug Fixes
+
+- fix children display error when dropEnterPredicate return false #INFR-8641 ([54c3455](https://github.com/worktile/ngx-gantt/commit/54c3455739e0e6559e18f0e77130c84a50e5e118)), closes [#INFR-8641](https://github.com/worktile/ngx-gantt/issues/INFR-8641)
+
+# [15.2.0-next.1](https://github.com/worktile/ngx-gantt/compare/15.2.0-next.0...15.2.0-next.1) (2023-07-28)
+
+### Features
+
+- support load data when virtual scroll #INFR-8652 ([#395](https://github.com/worktile/ngx-gantt/issues/395)) ([f20ad4c](https://github.com/worktile/ngx-gantt/commit/f20ad4c3913b0fe7a19ae480dec495a99392427a)), closes [#INFR-8652](https://github.com/worktile/ngx-gantt/issues/INFR-8652) [#INFR-8626](https://github.com/worktile/ngx-gantt/issues/INFR-8626)
+
+# [15.2.0-next.0](https://github.com/worktile/ngx-gantt/compare/15.1.1...15.2.0-next.0) (2023-07-19)
+
+### Features
+
+- gantt component support footer template #INFR-8626 ([#394](https://github.com/worktile/ngx-gantt/issues/394)) ([c437b0c](https://github.com/worktile/ngx-gantt/commit/c437b0c80782ce1c17e38d63eaf49c76554ca3b3)), closes [#INFR-8626](https://github.com/worktile/ngx-gantt/issues/INFR-8626) [#INFR-8626](https://github.com/worktile/ngx-gantt/issues/INFR-8626)
+
+## [15.1.1](https://github.com/worktile/ngx-gantt/compare/15.1.0...15.1.1) (2023-07-05)
+
+### Bug Fixes
+
+- fix compute scroll bar error ([395d82a](https://github.com/worktile/ngx-gantt/commit/395d82ab1d90c3063367cfb1942d70a844120d42))
+- fix misalignment when scrollbar scrolls to the edge ([#389](https://github.com/worktile/ngx-gantt/issues/389)) ([6f5c862](https://github.com/worktile/ngx-gantt/commit/6f5c86281942882e3d115ee55e50212df83d5c24))
+- fix two scrollbar error ([b73c3e3](https://github.com/worktile/ngx-gantt/commit/b73c3e30d3eba7dafd567d0ae4b71a12c268ac9d))
+
 # [15.1.0](https://github.com/worktile/ngx-gantt/compare/15.0.0...15.1.0) (2023-05-19)
 
 ### chore

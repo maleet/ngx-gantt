@@ -9,7 +9,8 @@ import {
 
 @Component({
     selector: 'ngx-gantt-table',
-    template: ''
+    template: '',
+    standalone: true
 })
 export class NgxGanttTableComponent {
     @Input() draggable = false;
@@ -27,4 +28,8 @@ export class NgxGanttTableComponent {
     @ContentChild('rowBeforeSlot', { static: true }) rowBeforeTemplate: TemplateRef<any>;
 
     @ContentChild('rowAfterSlot', { static: true }) rowAfterTemplate: TemplateRef<any>;
+
+    @ContentChild('tableEmpty', { static: true }) tableEmptyTemplate: TemplateRef<any>;
+
+    @ContentChild('tableFooter', { static: true }) tableFooterTemplate: TemplateRef<any>;
 }

@@ -35,6 +35,7 @@ export class GanttBarClickEvent<T = unknown> {
 
 export class GanttSelectedEvent<T = unknown> {
     event: Event;
+    current?: GanttItem<T>;
     selectedValue: GanttItem<T> | GanttItem<T>[];
 }
 
@@ -62,4 +63,13 @@ export class GanttTableDragEnterPredicateContext<T = unknown> {
     source: GanttItem<T>;
     target: GanttItem<T>;
     dropPosition: GanttTableDropPosition;
+}
+
+export class GanttVirtualScrolledIndexChangeEvent {
+    index: number;
+    renderedRange: {
+        start: number;
+        end: number;
+    };
+    count: number;
 }

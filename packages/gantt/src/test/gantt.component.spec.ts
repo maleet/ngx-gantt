@@ -36,6 +36,11 @@ const config = {
         year: 'yyyy',
         yearMonth: 'yyyy/MM',
         yearQuarter: 'yyyy/QQQ'
+    },
+    styleOptions: {
+        headerHeight: 60,
+        lineHeight: 60,
+        barHeight: 30
     }
 };
 
@@ -314,6 +319,26 @@ function assertGroups<T extends TestGanttComponentBase>(fixture: ComponentFixtur
     });
 }
 
+function assertConfigStyle(ganttComponent: NgxGanttComponent, ganttDebugElement: DebugElement) {
+    const styleOptionsBindElement = {
+        headerHeight: ['.gantt-calendar-header', '.gantt-table-header'],
+        lineHeight: ['.gantt-item', '.gantt-table-item', '.gantt-group', '.gantt-table-group'],
+        barHeight: ['.gantt-bar']
+    };
+    for (const key in styleOptionsBindElement) {
+        if (Object.prototype.hasOwnProperty.call(styleOptionsBindElement, key)) {
+            const bindElementsClass = styleOptionsBindElement[key];
+            bindElementsClass.forEach((elementClass) => {
+                const element = ganttDebugElement.query(By.css(elementClass));
+                if (element) {
+                    const height = element.nativeElement.style.getPropertyValue('height');
+                    expect(height).toEqual(ganttComponent.config.styleOptions[key] + 'px');
+                }
+            });
+        }
+    }
+}
+
 describe('ngx-gantt', () => {
     describe('#basic', () => {
         let fixture: ComponentFixture<TestGanttBasicComponent>;
@@ -451,6 +476,7 @@ describe('ngx-gantt', () => {
             ganttComponentInstance.loading = false;
             fixture.detectChanges();
             loaderDom = fixture.debugElement.query(By.directive(GanttLoaderComponent));
+            tick(200);
             expect(loaderDom).toBeFalsy();
         }));
 
@@ -471,15 +497,17 @@ describe('ngx-gantt', () => {
             ganttComponentInstance.loading = false;
             fixture.detectChanges();
             loaderDom = fixture.debugElement.query(By.directive(GanttLoaderComponent));
+            tick(200);
             expect(loaderDom).toBeFalsy();
         }));
 
-        it('should column inherits the class when gantt-table-column sets class"', fakeAsync(() => {
+        it('should column inherits the class when gantt-table-column sets class', fakeAsync(() => {
             const newItems = mockItems.slice(0, 1);
             ganttComponentInstance.items = [...newItems];
             fixture.detectChanges();
             const ganttTable: DebugElement = ganttDebugElement.query(By.directive(GanttTableBodyComponent));
             const ganttTableColumn = ganttTable.query(By.css('.gantt-table-column')).nativeElement;
+            tick(200);
             expect(ganttTableColumn.classList).toContain('title-name');
             expect(ganttTableColumn.classList).toContain('title-name-2');
             expect(ganttTableColumn.classList).toContain('title-name-3');
@@ -491,6 +519,10 @@ describe('ngx-gantt', () => {
             ganttComponentInstance.virtualScrollEnabled = false;
             fixture.detectChanges();
             expect(viewportElement.nativeElement.classList).toContain('gantt-normal-viewport');
+        });
+
+        it('should gantt basic has correct config style', () => {
+            assertConfigStyle(ganttComponentInstance.ganttComponent, ganttDebugElement);
         });
     });
 
@@ -561,6 +593,10 @@ describe('ngx-gantt', () => {
                 expect(group.expanded).toBe(false);
             });
             expect(afterCollapseItems.length).toEqual(0);
+        });
+
+        it('should gantt groups has correct config style', () => {
+            assertConfigStyle(ganttComponent, fixture.debugElement);
         });
     });
 

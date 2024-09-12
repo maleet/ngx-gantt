@@ -1,10 +1,10 @@
-import { fakeAsync, TestBed, ComponentFixture, async, inject, flush } from '@angular/core/testing';
-import { Component, ViewChild, DebugElement } from '@angular/core';
-import { NgxGanttModule } from 'ngx-gantt';
+import { Component, DebugElement, ViewChild } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, flush, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { NgxGanttModule } from 'ngx-gantt';
+import { GanttMainComponent } from 'ngx-gantt/components/main/gantt-main.component';
 import { getMockGroupItems, getMockGroups } from '../../../test/mocks/data';
 import { dispatchMouseEvent } from '../../../utils/testing';
-import { GanttMainComponent } from 'ngx-gantt/components/main/gantt-main.component';
 import { GanttTableBodyComponent } from '../body/gantt-table-body.component';
 import { GanttTableHeaderComponent } from '../header/gantt-table-header.component';
 @Component({
@@ -49,7 +49,7 @@ describe('GanttTable', () => {
     let component: TestGanttTableBodyComponent;
     let fixture: ComponentFixture<TestGanttTableBodyComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [NgxGanttModule],
             declarations: [TestGanttTableBodyComponent]
@@ -152,6 +152,7 @@ describe('GanttTable', () => {
 
         ganttTable.query(By.css('.gantt-table-item')).nativeNode.click();
         fixture.detectChanges();
+        tick(200);
         expect(selectionModel.hasValue()).toBeTrue();
         expect(selectionModel.selected[0]).toEqual(items[0].id);
     }));
@@ -163,6 +164,7 @@ describe('GanttTable', () => {
         const mainItemNode = ganttMain.query(By.css('.gantt-item')).nativeNode;
         itemNode.click();
         fixture.detectChanges();
+        tick(200);
         expect(itemNode.classList).toContain('gantt-table-item-active');
         expect(mainItemNode.classList).toContain('gantt-main-item-active');
     }));
