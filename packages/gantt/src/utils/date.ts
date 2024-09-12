@@ -33,7 +33,6 @@ import {
 } from 'date-fns';
 
 export {
-    Locale,
     addDays,
     addHours,
     addMinutes,
